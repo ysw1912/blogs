@@ -1,5 +1,6 @@
 ---
 author: "ysw1912"
+date: 2018-06-04
 title: "Win10 + VS2017 新CUDA项目配置"
 tags: [
     "C/C++",
