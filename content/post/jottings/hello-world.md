@@ -9,17 +9,18 @@ categories: [
     "jotting"
 ]
 ---
-## music
-
-{{% music "4879054" %}}
 
 ## 引言
 
-一名程序员渣渣的第一篇github博客
+{{% music "4879054" %}}
 
-曾使用[博客园](http://www.cnblogs.com/wayne793377164/)
+一名程序员渣渣开始使用github blog，发篇博文纪念一波
 
-首先写一个Hello World吧～
+曾使用[博客园](http://www.cnblogs.com/wayne793377164/)，移植工作进行ing
+
+希望自己越来越强壮！Good Good Study, Day Day Up！
+
+## Hello World
 
 ```cpp
 // "Hello World!" program
