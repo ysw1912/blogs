@@ -143,8 +143,8 @@ defaultContentLanguage = "zh-cn"           # Default language to use
 
 # jsonfeed support
 # more information: https://github.com/xianmin/hugo-theme-jane/issues/23
-# [outputs]
-#   home = ["html", "jsonfeed"]
+ [outputs]
+   home = ["HTML", "RSS", "JSON"]
 #   page = ["html"]
 #
 # [outputFormats]
