@@ -23,8 +23,11 @@ defaultContentLanguage = "zh-cn"           # Default language to use
 [languages.zh-cn]
   languageCode = "zh-cn"
 
+[languages.en]
+  languageCode = "en"
+
 [author]                  # essential                     # 必需
-  name = "ysw"
+  name = "ysw1912"
 
 [sitemap]                 # essential                     # 必需
   changefreq = "weekly"
