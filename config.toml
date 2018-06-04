@@ -9,7 +9,7 @@ paginate = 15                                             # 首页每页显示�
 rssLimit = 20             # Limit Entry Count to Rss file # 限制 Rss 文章输出数量
 disqusShortname = ""      # disqus_shortname
 googleAnalytics = ""      # UA-XXXXXXXX-X
-copyright = "ysw"         # default: author.name ↓        # 默认为下面配置的author.name ↓
+copyright = "ysw1912"     # default: author.name ↓        # 默认为下面配置的author.name ↓
 # uglyURLs = true         # more info: https://gohugo.io/content-management/urls/#ugly-urls
 
 # Highlight options. See https://gohugo.io/content-management/syntax-highlighting/
@@ -139,8 +139,8 @@ defaultContentLanguage = "zh-cn"           # Default language to use
 
 # jsonfeed support
 # more information: https://github.com/xianmin/hugo-theme-jane/issues/23
- [outputs]
-   home = ["HTML", "RSS", "JSON"]
+# [outputs]
+#   home = ["HTML", "RSS", "JSON"]
 #   page = ["html"]
 #
 # [outputFormats]

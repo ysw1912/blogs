@@ -1,0 +1,125 @@
+---
+author: "ysw1912"
+date: 2018-06-04
+title: "Win10+VS2017配置CUDA项目"
+tags: [
+    "C/C++",
+    "CUDA"
+]
+categories: [
+    "C/C++"
+]
+---
+
+## 一、新建项目
+
+打开 VS2017 → 新建项目 → Win32控制台应用程序 → “空项目”
+
+## 二、调整配置管理器平台类型
+
+右键项目 → 属性 → 配置管理器 → 全改为“x64”
+
+![](/image/post/C&C++/CUDA01/01.png)
+
+## 三、配置生成属性
+
+右键项目 → 生成依赖项 → 生成自定义 → 勾选“CUDA 9.0XXX”
+
+![](/image/post/C&C++/CUDA01/02.png)
+
+## 四、配置基本库目录
+
+<font color=#ff0000>注意：后续步骤中出现的目录地址需取决于你当前的CUDA版本及安装路径</font>
+
+右键项目 → 属性 → 配置属性 → VC++目录 → 包含目录，添加以下目录：
+
+- C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\include  
+- C:\ProgramData\NVIDIA Corporation\CUDA Samples\v9.0\common\inc
+
+...... → 库目录，添加以目录：
+
+- C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64  
+- C:\ProgramData\NVIDIA Corporation\CUDA Samples\v9.0\common\lib\x64
+
+![](/image/post/C&C++/CUDA01/03.png)
+
+## 五、配置CUDA静态链接库路径
+
+右键项目 → 属性 → 配置属性 → 链接器 → 常规 → 附加库目录，添加以下：
+
+- $(CUDA_PATH_V9_0)\lib\$(Platform)
+
+![](/image/post/C&C++/CUDA01/04.png)
+
+## 六、选用CUDA静态链接库
+
+右键项目 → 属性 → 配置属性 → 链接器 → 输入 → 附加依赖项，添加以下：
+
+- cublas.lib;cublas_device.lib;cuda.lib;cudadevrt.lib;cudart.lib;cudart_static.lib;cufft.lib;cufftw.lib;curand.lib;cusolver.lib;cusparse.lib;nppc.lib;nppial.lib;nppicc.lib;nppicom.lib;nppidei.lib;nppif.lib;nppig.lib;nppim.lib;nppist.lib;nppisu.lib;nppitc.lib;npps.lib;nvblas.lib;nvcuvid.lib;nvgraph.lib;nvml.lib;nvrtc.lib;OpenCL.lib;
+
+![](/image/post/C&C++/CUDA01/05.png)
+
+以上为 ”第四步” 中添加的库目录 “C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64” 中的库！
+
+- 注意：kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)  
+这些库为原有！
+
+## 七、配置源码文件风格
+
+右键源文件 → 添加 → 新建项 → 选择 “CUDA C/C++ File”  
+右键 “xxx.cu" 源文件 → 属性 → 配置属性 → 常规 → 项类型 → 设置为“CUDA C/C++”
+
+![](/image/post/C&C++/CUDA01/06.png)
+
+## 八、测试
+
+```cpp
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+#include <stdio.h>
+
+int main() {
+    int deviceCount;
+    cudaGetDeviceCount(&deviceCount);
+
+    int dev;
+    for (dev = 0; dev < deviceCount; dev++)
+    {
+        int driver_version(0), runtime_version(0);
+        cudaDeviceProp deviceProp;
+        cudaGetDeviceProperties(&deviceProp, dev);
+        if (dev == 0)
+            if (deviceProp.minor = 9999 && deviceProp.major == 9999)
+                printf("\n");
+        printf("\nDevice%d:\"%s\"\n", dev, deviceProp.name);
+        cudaDriverGetVersion(&driver_version);
+        printf("CUDA驱动版本:                                   %d.%d\n", driver_version / 1000, (driver_version % 1000) / 10);
+        cudaRuntimeGetVersion(&runtime_version);
+        printf("CUDA运行时版本:                                 %d.%d\n", runtime_version / 1000, (runtime_version % 1000) / 10);
+        printf("设备计算能力:                                   %d.%d\n", deviceProp.major, deviceProp.minor);
+        printf("Total amount of Global Memory:                  %u bytes\n", deviceProp.totalGlobalMem);
+        printf("Number of SMs:                                  %d\n", deviceProp.multiProcessorCount);
+        printf("Total amount of Constant Memory:                %u bytes\n", deviceProp.totalConstMem);
+        printf("Total amount of Shared Memory per block:        %u bytes\n", deviceProp.sharedMemPerBlock);
+        printf("Total number of registers available per block:  %d\n", deviceProp.regsPerBlock);
+        printf("Warp size:                                      %d\n", deviceProp.warpSize);
+        printf("Maximum number of threads per SM:               %d\n", deviceProp.maxThreadsPerMultiProcessor);
+        printf("Maximum number of threads per block:            %d\n", deviceProp.maxThreadsPerBlock);
+        printf("Maximum size of each dimension of a block:      %d x %d x %d\n", deviceProp.maxThreadsDim[0],
+            deviceProp.maxThreadsDim[1],
+            deviceProp.maxThreadsDim[2]);
+        printf("Maximum size of each dimension of a grid:       %d x %d x %d\n", deviceProp.maxGridSize[0], deviceProp.maxGridSize[1], deviceProp.maxGridSize[2]);
+        printf("Maximum memory pitch:                           %u bytes\n", deviceProp.memPitch);
+        printf("Texture alignmemt:                              %u bytes\n", deviceProp.texturePitchAlignment);
+        printf("Clock rate:                                     %.2f GHz\n", deviceProp.clockRate * 1e-6f);
+        printf("Memory Clock rate:                              %.0f MHz\n", deviceProp.memoryClockRate * 1e-3f);
+        printf("Memory Bus Width:                               %d-bit\n", deviceProp.memoryBusWidth);
+    }
+
+    return 0;
+}
+
+```
+
+输出结果：
+![](/image/post/C&C++/CUDA01/07.png)
