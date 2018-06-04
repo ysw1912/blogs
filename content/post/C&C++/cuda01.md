@@ -18,15 +18,11 @@ categories: [
 ## 二、调整配置管理器平台类型
 
 右键项目 → 属性 → 配置管理器 → 全改为“x64”
-
-<div align=center>
-![](/image/post/C&C++/CUDA01/01.png)
-</div>
+<div align=center>![](/image/post/C&C++/CUDA01/01.png)</div>
 
 ## 三、配置生成属性
 
 右键项目 → 生成依赖项 → 生成自定义 → 勾选“CUDA 9.0XXX”
-
 <div align=center>![](/image/post/C&C++/CUDA01/02.png)</div>
 
 ## 四、配置基本库目录
@@ -42,7 +38,6 @@ categories: [
 
 - C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64  
 - C:\ProgramData\NVIDIA Corporation\CUDA Samples\v9.0\common\lib\x64
-
 <div align=center>![](/image/post/C&C++/CUDA01/03.png)</div>
 
 ## 五、配置CUDA静态链接库路径
@@ -50,7 +45,6 @@ categories: [
 右键项目 → 属性 → 配置属性 → 链接器 → 常规 → 附加库目录，添加以下：
 
 - $(CUDA_PATH_V9_0)\lib\$(Platform)
-
 <div align=center>![](/image/post/C&C++/CUDA01/04.png)</div>
 
 ## 六、选用CUDA静态链接库
@@ -58,7 +52,6 @@ categories: [
 右键项目 → 属性 → 配置属性 → 链接器 → 输入 → 附加依赖项，添加以下：
 
 - cublas.lib;cublas_device.lib;cuda.lib;cudadevrt.lib;cudart.lib;cudart_static.lib;cufft.lib;cufftw.lib;curand.lib;cusolver.lib;cusparse.lib;nppc.lib;nppial.lib;nppicc.lib;nppicom.lib;nppidei.lib;nppif.lib;nppig.lib;nppim.lib;nppist.lib;nppisu.lib;nppitc.lib;npps.lib;nvblas.lib;nvcuvid.lib;nvgraph.lib;nvml.lib;nvrtc.lib;OpenCL.lib;
-
 <div align=center>![](/image/post/C&C++/CUDA01/05.png)</div>
 
 以上为 ”第四步” 中添加的库目录 “C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64” 中的库！
@@ -70,10 +63,9 @@ categories: [
 
 右键源文件 → 添加 → 新建项 → 选择 “CUDA C/C++ File”  
 右键 “xxx.cu" 源文件 → 属性 → 配置属性 → 常规 → 项类型 → 设置为“CUDA C/C++”
-
 <div align=center>![](/image/post/C&C++/CUDA01/06.png)</div>
 
-## 八、测试
+## 八、CUDA编程测试
 
 ```cpp
 #include "cuda_runtime.h"
