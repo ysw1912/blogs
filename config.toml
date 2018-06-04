@@ -118,6 +118,13 @@ defaultContentLanguage = "zh-cn"           # Default language to use
     clientId = "85cc0c5a3f49196bdeb0"           # Your client ID
     clientSecret = "d35ce92810461ae478b60b96a11ed65df8f978bd"       # Your client secret
 
+  [params.Search]
+    enable = true    # true or false
+    type = "algolia"  # lunr or algolia
+    index = "github-blog"
+    key = "873aa579b3ff7c8d70f24b7ee6ae9e8b"
+    appID = "VW8TY6GYEC"
+    searchKey = "05d20c0e1563511be836a660782fbbcf"
 
   [params.reward]                                         # 文章打赏
     enable = true
