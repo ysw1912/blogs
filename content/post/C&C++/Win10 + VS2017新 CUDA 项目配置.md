@@ -1,6 +1,6 @@
 ---
 author: "ysw1912"
-title: "Hello World"
+title: "Win10 + VS2017 新CUDA项目配置"
 tags: [
     "C/C++",
     "CUDA"
@@ -18,4 +18,4 @@ categories: [
 
 右键项目 → 属性 → 配置管理器 → 全改为“x64”
 
-![a](./image/post/C&C++/Win10 + VS2017新 CUDA 项目配置/01.png)
+![](./image/post/C&C++/CUDA01/01.png)
