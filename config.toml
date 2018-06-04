@@ -1,5 +1,5 @@
 baseURL = "https://ysw1912.github.io/"
-title = "Jane - A super concise theme for Hugo"
+title = "Hide on bush"
 enableRobotsTXT = true
 enableEmoji = true
 theme = "jane"
@@ -9,7 +9,7 @@ paginate = 15                                             # 首页每页显示�
 rssLimit = 20             # Limit Entry Count to Rss file # 限制 Rss 文章输出数量
 disqusShortname = ""      # disqus_shortname
 googleAnalytics = ""      # UA-XXXXXXXX-X
-copyright = ""            # default: author.name ↓        # 默认为下面配置的author.name ↓
+copyright = "ysw"         # default: author.name ↓        # 默认为下面配置的author.name ↓
 # uglyURLs = true         # more info: https://gohugo.io/content-management/urls/#ugly-urls
 
 # Highlight options. See https://gohugo.io/content-management/syntax-highlighting/
@@ -20,11 +20,11 @@ PygmentsOptions = "linenos=table"
 
 # language support # en / zh-cn / other... translations present in i18n/
 defaultContentLanguage = "zh-cn"           # Default language to use
-[languages.en]
+[languages.zh-cn]
   languageCode = "zh-cn"
 
 [author]                  # essential                     # 必需
-  name = "xianmin"
+  name = "ysw"
 
 [sitemap]                 # essential                     # 必需
   changefreq = "weekly"
@@ -32,42 +32,38 @@ defaultContentLanguage = "zh-cn"           # Default language to use
   filename = "sitemap.xml"
 
 [[menu.main]]             # config your menu              # 配置目录
-  name = "Home"
+  name = "首页"
   weight = 10
   identifier = "home"
   url = "/"
 [[menu.main]]
-  name = "Archives"
+  name = "归档"
   weight = 20
   identifier = "archives"
   url = "/post/"
 [[menu.main]]
-  name = "Tags"
+  name = "标签"
   weight = 30
   identifier = "tags"
   url = "/tags/"
 [[menu.main]]
-  name = "Categories"
+  name = "分类"
   weight = 40
   identifier = "categories"
   url = "/categories/"
-[[menu.main]]
-  name = "external-link"
-  weight = 50
-  url = "https://gohugo.io"
 
 
 [params]
   debug = false             # If true, load `eruda.min.js`. See https://github.com/liriliri/eruda
   # uglyURLs = true          # You must set true after use uglyURLs in site (above). because $.Site.UglyURLs can not import.
-  since = "2017"            # Site creation time          # 站点建立时间
+  since = "2018"            # Site creation time          # 站点建立时间
   homeFullContent = false   # if false, show post summaries on home page. Othewise show full content.
   rssFullContent = true     # if false, Rss feed instead of the summary
 
   # site info (optional)                                  # 站点信息（可选，不需要的可以直接注释掉）
-  logoTitle = "Jane"        # default: the title value    # 默认值: 上面设置的title值
-  keywords = ["Hugo", "theme","jane"]
-  description = "Hugo theme jane example site."
+  logoTitle = "有顶天"        # default: the title value    # 默认值: 上面设置的title值
+  keywords = ["Hugo", "Blog", "ysw1912"]
+  description = "ysw's blog."
 
   # paginate of archives, tags and categories             # 归档、标签、分类每页显示的文章数目，建议修改为一个较大的值
   archive-paginate = 50
@@ -114,33 +110,33 @@ defaultContentLanguage = "zh-cn"           # Default language to use
     gitmentCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">'
 
   [params.gitment]          # Gitment is a comment system based on GitHub issues. see https://github.com/imsun/gitment
-    owner = ""              # Your GitHub ID
-    repo = ""               # The repo to store comments
-    clientId = ""           # Your client ID
-    clientSecret = ""       # Your client secret
+    owner = "ysw1912"              # Your GitHub ID
+    repo = "blog_comments"               # The repo to store comments
+    clientId = "85cc0c5a3f49196bdeb0"           # Your client ID
+    clientSecret = "d35ce92810461ae478b60b96a11ed65df8f978bd"       # Your client secret
 
 
   [params.reward]                                         # 文章打赏
-    enable = false
-    wechat = "/path/to/your/wechat-qr-code.png"           # 微信二维码
-    alipay = "/path/to/your/alipay-qr-code.png"           # 支付宝二维码
+    enable = true
+    wechat = "/image/pay/wechat.png"           # 微信二维码
+    alipay = "/image/pay/alipay.jpg"           # 支付宝二维码
 
   [params.social]                                         # 社交链接
-    a-email = "mailto:your@email.com"
-    b-stack-overflow = "http://localhost:1313"
-    c-twitter = "http://localhost:1313"
-    d-facebook = "http://localhost:1313"
-    e-linkedin = "http://localhost:1313"
-    f-google = "http://localhost:1313"
-    g-github = "http://localhost:1313"
-    h-weibo = "http://localhost:1313"
-    i-zhihu = "http://localhost:1313"
-    j-douban = "http://localhost:1313"
-    k-pocket = "http://localhost:1313"
-    l-tumblr = "http://localhost:1313"
-    m-instagram = "http://localhost:1313"
-    n-gitlab = "http://en.xianmin.org/hugo-theme-jane/"
-    o-goodreads = "http://en.xianmin.org/hugo-theme-jane/"
+    a-email = "mailto:793377164@qq.com"
+   # b-stack-overflow = "http://localhost:1313"
+    c-twitter = "https://twitter.com/YangStewie/"
+   # d-facebook = "http://localhost:1313"
+   # e-linkedin = "http://localhost:1313"
+   # f-google = "http://localhost:1313"
+    g-github = "https://github.com/ysw1912/"
+   # h-weibo = "http://localhost:1313"
+   # i-zhihu = "http://localhost:1313"
+   # j-douban = "http://localhost:1313"
+   # k-pocket = "http://localhost:1313"
+   # l-tumblr = "http://localhost:1313"
+   # m-instagram = "http://localhost:1313"
+   # n-gitlab = "http://en.xianmin.org/hugo-theme-jane/"
+   # o-goodreads = "http://en.xianmin.org/hugo-theme-jane/"
 
 # jsonfeed support
 # more information: https://github.com/xianmin/hugo-theme-jane/issues/23
