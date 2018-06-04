@@ -6,6 +6,9 @@
 #########################################################################
 #!/bin/bash
 
+# Add changes to git 
+git add .
+
 if [ $# -lt  1 ]; then
     echo "$0 <commit message>"
     exit 1
