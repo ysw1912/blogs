@@ -9,6 +9,9 @@ categories: [
     "jotting"
 ]
 ---
+## music
+
+{{% music "3950552" %}}
 
 ## 引言
 
