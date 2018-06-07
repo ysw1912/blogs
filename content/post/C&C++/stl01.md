@@ -67,4 +67,19 @@ categories: [
 <div align=center>![](/image/post/C&C++/STL01/03.png)</div>
 
 - `case 3`：`W`为黑色。
+  - `case 3.1`：`W`的孩子节点`WL`、`WR`均为黑色。
+      - `case 3.1.1`：`P`为黑色。  
+      &ensp;&ensp;只需把`W`变为红色，这样所有经过`W`的路径（路径3、4、5、6）比之前少一个黑色节点，就与经过`X`的路径（路径1、2）上的黑色节点数一致了。但经过`P`的路径比不经过`P`的路径少一个黑色节点，再把`X`节点指向`P`，从`case 1`开始重新进行平衡处理。
+<div align=center>![](/image/post/C&C++/STL01/04.png)</div>
+
+      - `case 3.1.2`：`P`为红色。  
+      &ensp;&ensp;只需互换`W`和`P`的颜色即可，此时所有路径的黑色节点数并未受到影响，但将该情况转化为`case 2`。
+<div align=center>![](/image/post/C&C++/STL01/05.png)</div>
+
+  - `case 3.2`：`W`的孩子节点有红色，`P`可红可黑。
+      - `case 3.2.1`：`WL`为红色，`WR`为黑。  
+      &ensp;&ensp;对`W`进行右旋操作，并互换`W`和`WL`的颜色，此时所有路径的黑色节点数并未受到影响，但将该情况转化为`case 3.2.2`。
+<div align=center>![](/image/post/C&C++/STL01/06.png)</div>
+      - `case 3.2.2`：
+
 
