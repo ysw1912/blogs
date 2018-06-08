@@ -1,7 +1,7 @@
 ---
 author: "ysw1912"
 date: 2018-06-05T10:00:00+08:00
-lastmod: 2018-06-06T11:42:00+08:00
+lastmod: 2018-06-08T11:37:00+08:00
 title: "Effective C++ 笔记"
 tags: [
     "C/C++"
@@ -66,4 +66,12 @@ class TextBlock {
   std::string text;
 };
 ```
+
+### 条款5：了解 C++ 默默编写并调用哪些函数
+
+- 如果没有声明，编译器可以暗自为 class 创建 default 构造函数、copy 构造函数、copy 赋值操作符、析构函数。
+- 编译器拒绝为 class 产生 copy 赋值操作符`operator=`的三种情况：
+  1. class 内含 reference 成员，因为 C++ 不允许引用改指向不同对象。
+  2. class 内含 const 成员。
+  3. 基类将 copy 赋值操作符声明为`private`，因为继承类无权调用该成员函数。
 
