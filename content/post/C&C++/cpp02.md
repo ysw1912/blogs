@@ -1,7 +1,7 @@
 ---
 author: "ysw1912"
 date: 2018-06-05T10:00:00+08:00
-lastmod: 2018-06-08T11:37:00+08:00
+lastmod: 2018-06-11T12:06:00+08:00
 title: "Effective C++ 笔记"
 tags: [
     "C/C++"
@@ -13,10 +13,10 @@ categories: [
 
 ### 条款2：尽量以 const，enum，inline 替换 #define
 
-- 对于单纯常量，尽量以const对象或enums替换#define。
-  - enum是一个右值，无法被取地址，可以充当 int 常量。
-- 对于类似函数的宏macros，最好改用inline函数替换#define。
-  - #define函数宏的缺点：
+- 对于单纯常量，尽量以`const`对象或`enum`替换`#define`。
+  - `enum`是一个右值，无法被取地址，可以充当`int`常量。
+- 对于类似函数的宏，最好改用`inline`函数替换`#define`。
+  - `#define`函数宏的缺点：
 
 ```cpp
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -67,11 +67,32 @@ class TextBlock {
 };
 ```
 
-### 条款5：了解 C++ 默默编写并调用哪些函数
+### 条款5：编译期自动为 class 生成哪些函数
 
 - 如果没有声明，编译器可以暗自为 class 创建 default 构造函数、copy 构造函数、copy 赋值操作符、析构函数。
 - 编译器拒绝为 class 产生 copy 赋值操作符`operator=`的三种情况：
   1. class 内含 reference 成员，因为 C++ 不允许引用改指向不同对象。
   2. class 内含 const 成员。
   3. 基类将 copy 赋值操作符声明为`private`，因为继承类无权调用该成员函数。
+
+### 条款6：阻止编译器自动生成拷贝构造和拷贝赋值
+
+- 将 copy constructor 或者 copy assignment operator 声明为`private`。
+- 为防止成员函数和友元函数调用`private`函数，可以只声明而不去定义它们，这将会产生一个<font color=#ff0000>链接错误</font>。
+- 为将链接期错误移至编译期，可将 copy 动作设计在基类中。
+
+```cpp
+class Uncopyable {
+ protected:
+  Uncopyable() {}
+  ~Uncopyable() {}
+ private:
+  Uncopyable(const Uncopyable&);
+  Uncopyable& operator=(const Uncopyable&);
+};
+
+class A : private Uncopyable {
+  ...
+};
+```
 
