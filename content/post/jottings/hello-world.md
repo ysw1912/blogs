@@ -13,7 +13,7 @@ categories: [
 
 ## 引言
 
-{{% music "4879054" %}}
+{{% music "22800822" %}}
 
 欢度六一儿童节的同时，一名程序员渣渣开始使用[GitHub Blog](https://ysw1912.github.io/)，发篇博文纪念一波。
 
