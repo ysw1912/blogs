@@ -1,7 +1,7 @@
 ---
 author: "ysw1912"
-date: 2018-06-14T10:00:00+08:00
-lastmod: 2018-06-14T10:00:00+08:00
+date: 2018-06-14T18:00:00+08:00
+lastmod: 2018-06-14T19:46:00+08:00
 title: "链表排序"
 tags: [
     "数据结构",
@@ -84,3 +84,8 @@ void sort()
 &emsp;&emsp;例如对链表`3 → 7 → 4 → 1 → 9 → 8 → 5 → 2 → 6`进行排序。
 <div align=center>![](/image/post/C&C++/STL02/01.png)</div>
 
+### 总结
+
+&emsp;&emsp;从图中可以形象地看出，这是利用了**<font color=#ff0000>二进制的进位思想</font>**，实现了**<font color=#ff0000>非递归的归并排序</font>**。《STL源码剖析》中并未分析该算法，说它是 quick sort，想必是写错了。
+
+&emsp;&emsp;时间复杂度`O(nlogn)`，空间复杂度`O(1)`（由于是链表，连续存储容器则需要额外空间）。
