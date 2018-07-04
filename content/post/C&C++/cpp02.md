@@ -66,6 +66,9 @@ class TextBlock {
   std::string text;
 };
 ```
+-----
+
+## 构造/析构/赋值运算
 
 ### 条款5：编译期自动为 class 生成哪些函数
 
@@ -106,4 +109,45 @@ class A : private Uncopyable {
 
 - 若析构函数可能抛出异常，应当`try`+`catch`捕捉异常，但吞下它（并不`throw`）或强制结束（调用`std::abort()`）。
 - 若某操作抛出的异常必须被处理，则 class 应当提供普通函数（而非析构函数）处理。
-- 
+
+### 条款9：绝不在构造和析构函数中调用虚函数
+
+- 构造 derived class 对象时，base class 对象会率先构造，而在基类对象构造期间，virtual 函数不具备多态性。使派生类对象构造时，调用虚函数的基类版本。
+- 若该虚函数是 pure virtual，代码甚至无法链接。
+
+-----
+
+## 资源管理
+
+智能指针与 RAII 不在此记录。
+
+&emsp;
+
+-----
+
+## 设计与声明
+
+### 条款21：返回对象时不要试图返回 reference
+
+### 条款24：若所有参数皆需类型转换，采用 non-member 函数
+
+&emsp;&emsp;例如对于有理数类 Rational，一个计算乘积的函数`operator*()`，合理的声明应为`const Rational operator*(const Rational&, const Rational&)`。
+
+- 条款21：直接返回对象的拷贝，其构造成本和析构成本是值得的。
+  - 若返回 local stack 对象的指针或引用，该对象在函数退出时就已被销毁了。
+  - 若返回 local static 对象，在需要多个这样的返回对象时，就有问题。
+  - 若返回 heap-allocated 对象的指针或引用，很多时候无法进行 delete，导致内存泄漏，如下面的情况。
+
+  ```cpp
+Rational w, x, y, z;
+w = x * y * z;	// operator*(operator*(x, y), z)
+  ```
+
+- 条款24：
+  - 若声明为 member 函数`const Rational operator*(const Rational&) const`，会出现如下错误。
+
+```cpp
+Rational w, x;
+w = x * 2;    // 正确
+w = 2 * x;    // 错误
+```
