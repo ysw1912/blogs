@@ -1,7 +1,7 @@
 ---
 author: "ysw1912"
 date: 2018-06-05T10:00:00+08:00
-lastmod: 2018-07-04T21:03:00+08:00
+lastmod: 2018-07-05T12:50:00+08:00
 title: "Effective C++ 笔记"
 tags: [
     "C/C++"
@@ -151,3 +151,27 @@ Rational w, x;
 w = x * 2;    // 正确
 w = 2 * x;    // 错误
 ```
+
+### 条款25：swap 函数
+
+- 当`std::swap`对自定义 class 效率不高时，需自己写一个 swap 的成员函数，并确保其不抛出异常。
+- 如果有了 member swap，也应当在该 class 所属的 namespace 里提供一个 non-member swap 来调用前者。
+- 对于 class（而非 class template），需全特化一个 std::swap 版本。
+- 调用 swap 时，你的 T 类型对象调用 T 专属版本，若不存在则调用 std 版本。
+
+```cpp
+template <class T>
+void do_something(T& obj1, T& obj2)
+{
+  using std::swap;    // 令std::swap在此函数内可用
+  ...
+  swap(obj1, obj2);    // 调用最佳swap版本
+  ...
+}
+```
+
+-----
+
+## 实现
+
+
