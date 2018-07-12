@@ -297,7 +297,101 @@ C (0x0x7fcec84ac2a0) 0
 
 &emsp;&emsp;如图所示，一个虚表包含以下几个部分。
 
-1. 虚继承
+1. 最上面 2 个 slot 仅在虚继承时使用，否则不存在。详见虚继承部分。
 2. “offset to top”是指到对象起始地址的偏移，单继承或多重继承时为 0，而多继承中，除了第一个基类，其它的基类子对象都相对于起始位置有偏移，均不为 0。
 3. “RTTI information”是一个对象指针，用于唯一标识对象的类型。
 4. “virtual function pointers”是我们理解的狭义的虚表，即存放虚函数指针的列表。
+
+## 虚继承
+
+```cpp
+class A
+{
+public:
+    int a1;
+    int a2;
+    virtual void A1() { printf("A::A1()\n"); }
+    virtual void A2() { printf("A::A2()\n"); }
+};
+
+class B : virtual public A
+{
+public:
+    int b1;
+    virtual void B1() { printf("B::B1()\n"); }
+    virtual void B2() { printf("B::B2()\n"); }
+};
+
+int main()
+{
+    printf("%p\n", &B::a1);
+    printf("%p\n", &B::a2);
+    printf("%p\n", &B::b1);
+
+    B b;
+    typedef void (*PF)();
+    PF pf = nullptr;
+
+    printf("B's vptr:\n");
+    for (int i = 0; i < 2; ++i) {
+        pf = (PF)*((long*)*(long*)&b + i);
+        pf();
+    };
+
+    long* p = (long*)&b + 2;
+    printf("A's vptr:\n");
+    for (int i = 0; i < 2; ++i) {
+        pf = (PF)*((long*)*(long*)p + i);
+        pf();
+    }
+    return 0;
+}
+```
+
+&emsp;&emsp;输出结果如下。
+
+```
+0x8
+0xc     // 12
+0x8     // 
+B's vptr:
+B::B1()
+B::B2()
+A's vptr:
+A::A1()
+A::A2()
+```
+
+&emsp;&emsp;B 类的虚表结构如下。可以看到，当存在虚继承时，虚表中会用上 virtual base offset 字段，标明该类与虚基类的偏移，结合下面的内存布局来看，B 的虚表中 virtual base offset 为 16，A 自己就是就是虚基类，所以 virtual base offset 为 0。
+
+```
+Vtable for B
+B::_ZTV1B: 11u entries
+0     16u
+8     (int (*)(...))0
+16    (int (*)(...))(& _ZTI1B)
+24    (int (*)(...))B::B1
+32    (int (*)(...))B::B2
+40    0u
+48    0u
+56    (int (*)(...))-16
+64    (int (*)(...))(& _ZTI1B)
+72    (int (*)(...))A::A1
+80    (int (*)(...))A::A2
+
+VTT for B
+B::_ZTT1B: 2u entries
+0     ((& B::_ZTV1B) + 24u)
+8     ((& B::_ZTV1B) + 72u)
+
+Class B
+   size=32 align=8
+   base size=12 base align=8
+B (0x0x7fc1865ab1a0) 0
+    vptridx=0u vptr=((& B::_ZTV1B) + 24u)
+  A (0x0x7fc186714600) 16 virtual
+      vptridx=8u vbaseoffset=-24 vptr=((& B::_ZTV1B) + 72u)
+```
+
+&emsp;&emsp;B 的对象模型如下。当存在虚基类时，先是子类的成员，最后才是虚基类的成员，而不像普通继承是将基类放在对象起始地址。因此需要用 virtual base offset 找到虚基类。至于为何将虚基类放在最后？是因为虚继承主要用于坑爹的“菱形继承”，让虚基类在派生类中只占用一份内存空间。
+<div align=center>![](/image/post/C&C++/cpp_object_model/05.png)</div>
