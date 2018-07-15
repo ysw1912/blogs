@@ -13,6 +13,8 @@ categories: [
 
 &emsp;&emsp;《APUE》这本书算是个字典了，本文算是对 pthread 的一些总结，主要是对原书中几段代码的解释说明，在读代码中记录知识点，技术含量不高。
 
+### 线程属性
+
 &emsp;&emsp;首先给出一个以分离状态创建线程的函数。
 
 ```cpp
@@ -181,3 +183,85 @@ void timeout(const struct timespec* when, void (*func)(void*), void* arg)
 4. main 线程释放 mutex，并等待 15s。
 
 &emsp;&emsp;可见，如果不将 mutex 设置为允许递归加锁，则在第 3 步时会发生死锁。
+
+### 线程与信号
+
+```cpp
+int         quit_flag;
+sigset_t    mask;
+
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t  wait_loc = PTHREAD_COND_INITIALIZER;
+
+void* thr_fn(void* arg)
+{
+    int err, signo;
+    for (;;) {
+        err = sigwait(&mask, &signo);
+        switch (signo) {
+        case SIGINT:
+            printf("\nInterrupt\n");
+            break;
+        case SIGQUIT:
+            pthread_mutex_lock(&lock);
+            quit_flag = 1;
+            pthread_mutex_unlock(&lock);
+            pthread_cond_signal(&wait_loc);
+            return 0;
+        default:
+            printf("Unexpected signal %d\n", signo);
+            exit(1);
+        }
+    }
+}
+
+int main()
+{
+    int         err;
+    sigset_t    old_mask;
+    pthread_t   tid;
+
+    sigemptyset(&mask);		// 初始化，清除信号集中中所有信号
+    sigaddset(&mask, SIGINT);	// 在信号集中添加特定信号
+    sigaddset(&mask, SIGQUIT);
+    if ((err = pthread_sigmask(SIG_BLOCK, &mask, &old_mask)) != 0) {
+        exit(0);
+    }
+    err = pthread_create(&tid, NULL, thr_fn, 0);
+    if (err != 0) {
+        exit(0);
+    }
+    pthread_mutex_lock(&lock);
+    while (quit_flag == 0)
+        pthread_cond_wait(&wait_loc, &lock);
+    pthread_mutex_unlock(&lock);
+    
+    /* 信号处理线程捕捉到 SIGQUIT，唤醒 main 线程，但 main 线程此时阻塞 SIGQUIT */
+    quit_flag = 0;
+
+    /* 重置信号屏蔽字，不再屏蔽 SIGQUIT，main 进程退出 */
+    sigprocmask(SIG_SETMASK, &old_mask, NULL);
+    exit(0);
+}
+```
+
+&emsp;&emsp;信号是软件中断，提供一种处理异步事件的方法。
+
+&emsp;&emsp;产生信号的条件有：
+
+1. 用户按某些终端键时。
+2. 硬件异常，如除数为0、无效内存引用等。
+3. 进程调用 kill 函数或用户使用 kill 命令发送信号。
+4. 检测到软件条件，如进程所设定时器超时。
+
+&emsp;&emsp;处理信号的方式有：
+
+1. 忽略信号。SIGKILL 和 SIGSTOP 这两个信号无法被忽略。
+2. 捕捉信号。调用一个用户函数对事件进行处理。
+3. 执行默认动作，大多数信号的默认动作是终止该进程。
+
+&emsp;&emsp;信号名是正整数常量。本例中`SIGINT`为用户按中断键（Delete 或 Ctrl + C）时终端驱动程序所产生的信号，`SIGQUIT`为用户按退出键（Ctrl + \）时产生的信号。
+
+&emsp;&emsp;进程和线程都有其信号屏蔽字，规定了当前阻塞而不能递送给该进程 / 线程的的信号集，调用`int sigprocmask / pthread_sigmask(int how, const sigset_t *restrict set, sigset_t *restrict oset)`可以检测或更改进程 / 线程的信号屏蔽字。
+
+&emsp;&emsp;这段代码的作用是，在 main 线程中屏蔽 SIGINT 和 SIGQUIT 信号，再创建一个新的用于信号处理的线程，该线程继承了 main 线程中的信号屏蔽字，但 sigwait 函数会原子地取消信号集的阻塞状态，在返回之前恢复线程的信号屏蔽字。
