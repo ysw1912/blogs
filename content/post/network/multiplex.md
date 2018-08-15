@@ -151,12 +151,22 @@ int epoll_wait(int epfd, struct epoll_event* events, int maxevents,
 
 &emsp;&emsp;详细地源码分析可参见[The Implementation of epoll](https://idndx.com/2014/09/01/the-implementation-of-epoll-1/)。这里仅做大致梳理。
 
-&emsp;&emsp;调用 epoll_create() 时，内核会通过 slab 分配器开辟一块高速 cache，并在其中创建一个事件表，用来存储所要监听的所有 fd 上的事件。存储所用的数据结构就是[红黑树](https://ysw1912.github.io/post/cc++/rbtree_delete/)，红黑树的插入、删除、查找的复杂度都是`O(nlogn)`，效率很高。
+**`epoll_create()`主要工作**
 
-&emsp;&emsp;内核创建红黑树后，同时会建立一个双向链表 readylist，该`就绪链表`用于存储所有就绪事件。
+1. 内核会通过 slab 分配器开辟一块高速 cache。
+2. 在高速 cache 中创建一个事件表，用来存储所有监听 fd 集合上的事件。存储所用的数据结构是[红黑树](https://ysw1912.github.io/post/cc++/rbtree_delete/)，红黑树的插入、删除、查找的复杂度都是`O(nlogn)`，效率很高。
+3. 同时会建立一个双向链表`readylist`（就绪链表），该就绪链表用于存储所有就绪事件。
 
-- 当执行 epoll_ctl() 时，除了操作事件表（红黑树）外，还会<font color=#ff0000>为该事件在 fd 相应的设备驱动程序上注册一个回调函数`ep_poll_callback`，当该 fd 上有事件到达时就调用这个回调函数，回调函数会将该 fd 上发生的事件放入到 readylist 中</font>。
-- 当 epoll_wait() 返回时，通过 readylist 中的每项 fd 对应的设备驱动的`poll`方法，获取 events 数组并拷贝到用户空间中，并清空 readylist。如果该 fd 处于 LT 模式，且该 fd 上有未处理事件时，会将该事件放回至 readylist。
+**`epoll_ctl()`主要工作**
+
+1. 对事件表进行相应的插入、删除、修改操作。
+2. <font color=#ff0000>为该事件在 fd 相应的设备驱动程序上注册一个回调函数`ep_poll_callback`，当该 fd 上有事件到达时就调用这个回调函数，回调函数会将该 fd 上发生的事件放入到 readylist 中</font>。
+
+**`epoll_wait()`主要工作**
+
+1. 在超时时间内，判断 readylist 中是否有就绪事件。
+2. 通过 readylist 中的每项 fd 对应的设备驱动的`poll`方法，获取 events 数组并拷贝到用户空间中，并清空 readylist。
+3. 如果该 fd 处于 LT 模式，且该 fd 上有未处理事件时，会将该事件放回至 readylist。
 
 #### 使用场景
 
