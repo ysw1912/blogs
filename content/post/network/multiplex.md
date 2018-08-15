@@ -1,7 +1,7 @@
 ---
 author: "ysw1912"
 date: 2018-08-15T14:30:00+08:00
-lastmod: 2018-08-15T14:30:00+08:00
+lastmod: 2018-08-15T21:51:00+08:00
 title: "三种I/O多路复用模型"
 tags: [
     "网络编程"
@@ -143,9 +143,9 @@ int epoll_wait(int epfd, struct epoll_event* events, int maxevents,
 
 &emsp;&emsp;对于一个 fd，epoll 除了提供 select/poll 那种 I/O 事件的 LT（Level Trigger，电平触发）模式，还提供 ET（Edge Trigger，边沿触发）模式， ET 模式是 epoll 的<font color=#ff0000>高效</font>工作模式。
 
-- fd 采用 LT 模式：epoll_wait 检测到该 fd 上有事件发生并通知应用程序后，若应用程序未立即处理该事件，或没有 read/write 完该 fd 上的所有数据，当下次调用 epoll_wait 时，epoll_wait 还会再次向应用程序通告此事件，直到该事件被处理。
+- fd 采用 LT 模式：epoll_wait() 检测到该 fd 上有事件发生并通知应用程序后，若应用程序未立即处理该事件，或没有 read/write 完该 fd 上的所有数据，当下次调用 epoll_wait() 时，epoll_wait() 还会再次向应用程序通告此事件，直到该事件被处理。
 
-- fd 采用 ET 模式：epoll_wait 检测到该 fd 上有事件发生并通知应用程序后，<font color=#ff0000>后续的 epoll_wait 不再向应用程序通知这一事件</font>，降低了同一 epoll 事件被重复触发的次数。
+- fd 采用 ET 模式：epoll_wait() 检测到该 fd 上有事件发生并通知应用程序后，<font color=#ff0000>后续的 epoll_wait() 不再向应用程序通知这一事件</font>，降低了同一 epoll 事件被重复触发的次数。
 
 #### 原理
 
@@ -153,7 +153,7 @@ int epoll_wait(int epfd, struct epoll_event* events, int maxevents,
 
 &emsp;&emsp;调用 epoll_create() 时，内核会通过 slab 分配器开辟一块高速 cache，并在其中创建一个事件表，用来存储所要监听的所有 fd 上的事件。存储所用的数据结构就是[红黑树](https://ysw1912.github.io/post/cc++/rbtree_delete/)，红黑树的插入、删除、查找的复杂度都是`O(nlogn)`，效率很高。
 
-&emsp;&emsp;内核创建红黑树后，同时会建立一个双向链表 readylist，用于存储所有就绪事件。
+&emsp;&emsp;内核创建红黑树后，同时会建立一个双向链表 readylist，该`就绪链表`用于存储所有就绪事件。
 
 - 当执行 epoll_ctl() 时，除了操作事件表（红黑树）外，还会<font color=#ff0000>为该事件在 fd 相应的设备驱动程序上注册一个回调函数`ep_poll_callback`，当该 fd 上有事件到达时就调用这个回调函数，回调函数会将该 fd 上发生的事件放入到 readylist 中</font>。
 - 当 epoll_wait() 返回时，通过 readylist 中的每项 fd 对应的设备驱动的`poll`方法，获取 events 数组并拷贝到用户空间中，并清空 readylist。如果该 fd 处于 LT 模式，且该 fd 上有未处理事件时，会将该事件放回至 readylist。
@@ -165,6 +165,6 @@ int epoll_wait(int epfd, struct epoll_event* events, int maxevents,
 1. 不必每次等待事件前都要重新准备要监听的 fd 集合，通过创建一个事件表复用了这些集合。
 2. 采用<font color=#ff0000>回调</font>的机制检测就绪事件，只有活跃可用的 fd 才会调用回调函数，效率与连接的总数无关。比起轮询，时间复杂度从`O(n)`降低到`O(1)`。
 3. 即使在使用 epoll_ctl() 往事件表上注册 fd 事件时，也不会影响 epoll_wait() 的返回 readylist 的数据。
-4. 用户获取事件时，无须遍历整个监听的 fd 集，极大地提高了应用程序索引就绪 fd 的效率。
+4. 用户获取事件时，无须遍历整个监听的 fd 集，只要遍历那些被内核 I/O 事件异步唤醒而加入 readylist 的 fd 集合即可，极大地提高了应用程序索引就绪 fd 的效率。
 
 &emsp;&emsp;因此，epoll 是目前 linux 大规模并发网络程序中的首选模型，适合连接数量巨大，但同一时刻活跃连接数量较少的场景。如果同一时刻活跃读较高，回调函数被触发得过于频繁时，epoll 对于 select/poll 的提升并不明显。
