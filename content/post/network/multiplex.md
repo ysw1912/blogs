@@ -105,7 +105,7 @@ struct pollfd
 
 ## epoll
 
-&emsp;&emsp;epoll 是 Linux 特有的 I/O 复用函数，避免了 select 和 poll 的缺点，实现上 epoll 使用<font color=#ff0000>一组函数</font>来完成任务。
+&emsp;&emsp;epoll 是 <font color=#ff0000>Linux 特有</font>的 I/O 复用函数，避免了 select 和 poll 的缺点，实现上 epoll 使用<font color=#ff0000>一组函数</font>来完成任务。
 
 &emsp;&emsp;对于长期监听的 fd，以及对这些 fd 期待的事件也不会改变时，每次调用 select 或 poll 仍然需要一次从用户空间到内核空间的拷贝。因此我们希望<font color=#ff0000>让内核长期保存所有需要监听的 fd 以及对应事件，并在需要时对部分 fd 以及期待事件进行修改</font>。
 
@@ -133,19 +133,38 @@ struct epoll_event
 - EPOLL_CTL_MOD 修改事件表中 fd 上的事件
 - EPOLL_CTL_DEL 删除事件表中 fd 上的事件
 
-&emsp;&emsp;epoll 除了提供 select/poll 那种 I/O 事件的 LT（Level Trigger，电平触发）
+&emsp;&emsp;epoll 系列系统调用的<font color=#ff0000>主要接口</font>是 epoll_wait() 函数，它在一段超时时间内等待一组 fd 上的事件：
+```c
+int epoll_wait(int epfd, struct epoll_event* events, int maxevents, 
+               int timeout);
+```
+
+&emsp;&emsp;epoll_wait 函数如果检测到事件，就将所有就绪的事件从内核事件表中拷贝到它的第二个参数 events 指向的数组中，这个数组<font color=#ff0000>只用于传出就绪事件</font>。
+
+&emsp;&emsp;对于一个 fd，epoll 除了提供 select/poll 那种 I/O 事件的 LT（Level Trigger，电平触发）模式，还提供 ET（Edge Trigger，边沿触发）模式， ET 模式是 epoll 的<font color=#ff0000>高效</font>工作模式。
+
+- fd 采用 LT 模式：epoll_wait 检测到该 fd 上有事件发生并通知应用程序后，若应用程序未立即处理该事件，或没有 read/write 完该 fd 上的所有数据，当下次调用 epoll_wait 时，epoll_wait 还会再次向应用程序通告此事件，直到该事件被处理。
+
+- fd 采用 ET 模式：epoll_wait 检测到该 fd 上有事件发生并通知应用程序后，<font color=#ff0000>后续的 epoll_wait 不再向应用程序通知这一事件</font>，降低了同一 epoll 事件被重复触发的次数。
 
 #### 原理
 
-&emsp;&emsp;调用 epoll_create() 时，会在内核的高速 cache 中创建一个事件表，用来存储所要监听的所有 fd。存储所用的数据结构就是<font color=#ff0000>红黑树</font>，每次往事件表中注册 fd 上的事件
+&emsp;&emsp;详细地源码分析可参见[The Implementation of epoll](https://idndx.com/2014/09/01/the-implementation-of-epoll-1/)。这里仅做大致梳理。
 
-&emsp;&emsp;epoll 使用了共享内存，利用 mmap 将用户进程和内核中的一段虚拟地址映射到同一块物理地址上，内核对 fd 上的事件进行检查就不用来回拷贝
+&emsp;&emsp;调用 epoll_create() 时，内核会通过 slab 分配器开辟一块高速 cache，并在其中创建一个事件表，用来存储所要监听的所有 fd 上的事件。存储所用的数据结构就是[红黑树](https://ysw1912.github.io/post/cc++/rbtree_delete/)，红黑树的插入、删除、查找的复杂度都是`O(nlogn)`，效率很高。
+
+&emsp;&emsp;内核创建红黑树后，同时会建立一个双向链表 readylist，用于存储所有就绪事件。
+
+- 当执行 epoll_ctl() 时，除了操作事件表（红黑树）外，还会<font color=#ff0000>为该事件在 fd 相应的设备驱动程序上注册一个回调函数`ep_poll_callback`，当该 fd 上有事件到达时就调用这个回调函数，回调函数会将该 fd 上发生的事件放入到 readylist 中</font>。
+- 当 epoll_wait() 返回时，通过 readylist 中的每项 fd 对应的设备驱动的`poll`方法，获取 events 数组并拷贝到用户空间中，并清空 readylist。如果该 fd 处于 LT 模式，且该 fd 上有未处理事件时，会将该事件放回至 readylist。
 
 #### 使用场景
 
 &emsp;&emsp;epoll 作为 Linux 下 select/poll 的增强版本，有如下优势：
 
 1. 不必每次等待事件前都要重新准备要监听的 fd 集合，通过创建一个事件表复用了这些集合。
-2. 用户获取事件时，无须遍历整个监听的 fd 集，极大地提高了应用程序索引就绪 fd 的效率。
+2. 采用<font color=#ff0000>回调</font>的机制检测就绪事件，只有活跃可用的 fd 才会调用回调函数，效率与连接的总数无关。比起轮询，时间复杂度从`O(n)`降低到`O(1)`。
+3. 即使在使用 epoll_ctl() 往事件表上注册 fd 事件时，也不会影响 epoll_wait() 的返回 readylist 的数据。
+4. 用户获取事件时，无须遍历整个监听的 fd 集，极大地提高了应用程序索引就绪 fd 的效率。
 
-&emsp;&emsp;因此 epoll 是目前 linux 大规模并发网络程序中的首选模型，适合连接数量巨大，但同一时刻活跃连接数量较少的场景。如果同一时刻活跃读较高，epoll 对于 select/poll 的提升并不明显。
+&emsp;&emsp;因此，epoll 是目前 linux 大规模并发网络程序中的首选模型，适合连接数量巨大，但同一时刻活跃连接数量较少的场景。如果同一时刻活跃读较高，回调函数被触发得过于频繁时，epoll 对于 select/poll 的提升并不明显。
