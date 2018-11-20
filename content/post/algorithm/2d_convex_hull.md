@@ -1,5 +1,3 @@
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js"></script>
-
 ---
 author: "ysw1912"
 date: 2018-11-20T11:00:00+08:00
@@ -14,7 +12,9 @@ categories: [
 
 ---
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
 ### 凸包问题
 
@@ -40,4 +40,6 @@ $$ \sigma = \frac{y_3 - y_2}{x_3 - x_2} $$
 - 若σ < τ，方向是逆时针（向左转）
 - 若σ < τ，方向是共线
 - 若σ < τ，方向是顺时针（向右转）
+
+&emsp;&emsp;因此，三个有序点的方向依赖于表达式
 
