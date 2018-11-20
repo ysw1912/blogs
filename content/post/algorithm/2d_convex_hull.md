@@ -42,10 +42,10 @@ categories: [
 - 共线 Colinear
 <div align=center>![](/image/post/algorithm/2d_convex_hull/01.png)</div>
 
-&emsp;&emsp;对于点$a(x_1, y_1)$、$b(x_2, y_2)$、$c($x_3, y_3)$，线段$ab$的斜率为
-$$ \sigma = \frac{y_2 - y_1}{x_2 - x_1}, $$
+&emsp;&emsp;对于点$a(x_1, y_1)$、$b(x_2, y_2)$、$c(x_3, y_3)$，线段$ab$的斜率为
+$$ \sigma = \frac{y_2 - y_1}{x_2 - x_1} $$
 线段$bc$的斜率为
-$$ \tau = \frac{y_3 - y_2}{x_3 - x_2}. $$
+$$ \tau = \frac{y_3 - y_2}{x_3 - x_2} $$
 
 - 若$ \sigma < \tau $，方向是逆时针（向左转）
 - 若$ \sigma = \tau $，方向是共线
@@ -80,15 +80,31 @@ $$ (y_2 - y_1) \times (x_3 - x_2) - (y_3 - y_2) \times (x_2 - x_1) $$
 
 ### Jarvis’s Algorithm or Wrapping
 
+<div align=center>![](/image/post/algorithm/2d_convex_hull/04.png)</div>
+
 1. 初始化 p 为最左侧的点（x 坐标最小的点）
 2. 循环如下步骤，直到回到初始的最左侧的点
   1. 找到下一个点 q，使得对于任意其他点 r，有三元组 (p, q, r) 的方向是逆时针
   2. 存储 q 作为 p 的下一个输出元素
   3. p = q
 
-<div align=center>![](/image/post/algorithm/2d_convex_hull/04.png)</div>
+```cpp
+void ConvexHull()
+{
+
+}
+```
+&emsp;&emsp;算法的复杂度为 O(m * n)，其中 m 是输出凸包中点的数量，n 是输入点集中点的数量。最坏的情况下，点集中所有点都在输出的凸包上，时间复杂度为 O(n^2)。
 
 ### Graham Scan
 
 <div align=center>![](/image/post/algorithm/2d_convex_hull/05.png)</div>
 <div align=center>![](/image/post/algorithm/2d_convex_hull/06.png)</div>
+
+```cpp
+void ConvexHull()
+{
+
+}
+```
+&emsp;&emsp;算法的复杂度为 O(m * n)，其中 m 是输出凸包中点的数量，n 是输入点集中点的数量。最坏的情况下，点集中所有点都在输出的凸包上，时间复杂度为 O(n^2)。
