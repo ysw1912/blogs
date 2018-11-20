@@ -14,7 +14,7 @@ categories: [
 
 ## GLFW
 
-&emsp;&emsp;**GLFW **是一个专门针对 OpenGL 的 C 语言库，它允许用户创建 OpenGL 上下文并显示窗口，它提供了一些渲染物体所需的最低限度的接口。其用来代替之前的 GLUT 库。
+&emsp;&emsp;** GLFW **是一个专门针对 OpenGL 的 C 语言库，它允许用户创建 OpenGL 上下文并显示窗口，它提供了一些渲染物体所需的最低限度的接口。其用来代替之前的 GLUT 库。
 
 ### 配置步骤
 
@@ -44,7 +44,7 @@ categories: [
 
 &emsp;&emsp;由于 OpenGL 只是一个标准/规范，具体的实现是由驱动开发商针对特定显卡实现的。而 OpenGL 驱动版本众多，它大多数函数的位置都无法在编译时确定下来，需要在运行时查询。所以任务就落在了开发者身上，开发者需要在运行时获取函数地址并将其保存在一个函数指针中供以后使用。但这样写出的代码复杂繁琐，因此我们需要 GLAD。
 
-&emsp;&emsp;**GLAD **是目前最流行的开源库，能帮我们简化这个流程。在此之前，我们首先用** OpenGL Extension Viewer **（[softonic下载页](https://opengl-extensions-viewer.en.softonic.com/)）查看自己的 OpenGL 版本，我这里是** 4.0 **。
+&emsp;&emsp;** GLAD **是目前最流行的开源库，能帮我们简化这个流程。在此之前，我们首先用** OpenGL Extension Viewer **（[softonic下载页](https://opengl-extensions-viewer.en.softonic.com/)）查看自己的 OpenGL 版本，我这里是** 4.0 **。
 <div align=center>![](/image/post/opengl/01/08.png)</div>
 
 &emsp;&emsp;打开 [GLAD在线服务页面](http://glad.dav1d.de/) ，默认语言为** C/C++ **，选择** OpenGL **，API 选择使用的对应的版本，Profile 选择** Core **，默认勾上了** Generate a loader **，点击** GENERATE **。
