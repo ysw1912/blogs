@@ -15,6 +15,16 @@ categories: [
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript" src="path-to-MathJax/MathJax.js?config=TeX-AMS_HTML">
+</script>
 
 ### 凸包问题
 
@@ -33,13 +43,14 @@ categories: [
 <div align=center>![](/image/post/algorithm/2d_convex_hull/01.png)</div>
 
 &emsp;&emsp;对于点a($x_1, y_1$)、b($x_2, y_2$)、c($x_3, y_3$)，线段ab的斜率为
-$$ \sigma = \frac{y_2 - y_1}{x_2 - x_1} $$
+$$ \sigma = \frac{y_2 - y_1}{x_2 - x_1}, $$
 线段bc的斜率为
-$$ \sigma = \frac{y_3 - y_2}{x_3 - x_2} $$
+$$ \tau = \frac{y_3 - y_2}{x_3 - x_2}. $$
 
-- 若σ < τ，方向是逆时针（向左转）
+- 若$ \sigma < \tau $，方向是逆时针（向左转）
 - 若σ < τ，方向是共线
 - 若σ < τ，方向是顺时针（向右转）
 
 &emsp;&emsp;因此，三个有序点的方向依赖于表达式
+$$ (y_2 - y_1) \times (x_3 - x_2) - (y_3 - y_2) \times (x_2 - x_1) $$
 
