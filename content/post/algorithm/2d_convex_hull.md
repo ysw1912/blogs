@@ -85,3 +85,10 @@ $$ (y_2 - y_1) \times (x_3 - x_2) - (y_3 - y_2) \times (x_2 - x_1) $$
   1. 找到下一个点 q，使得对于任意其他点 r，有三元组 (p, q, r) 的方向是逆时针
   2. 存储 q 作为 p 的下一个输出元素
   3. p = q
+
+<div align=center>![](/image/post/algorithm/2d_convex_hull/04.png)</div>
+
+### Graham Scan
+
+<div align=center>![](/image/post/algorithm/2d_convex_hull/05.png)</div>
+<div align=center>![](/image/post/algorithm/2d_convex_hull/06.png)</div>
