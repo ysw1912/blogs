@@ -80,13 +80,14 @@ $$ (y_2 - y_1) \times (x_3 - x_2) - (y_3 - y_2) \times (x_2 - x_1) $$
 
 ### Jarvis’s Algorithm or Wrapping
 
-<div align=center>![](/image/post/algorithm/2d_convex_hull/04.png)</div>
+&emsp;&emsp;算法流程如下：
 
 1. 初始化 p 为最左侧的点（x 坐标最小的点）
 2. 循环如下步骤，直到回到初始的最左侧的点
   1. 找到下一个点 q，使得对于任意其他点 r，有三元组 (p, q, r) 的方向是逆时针
   2. 存储 q 作为 p 的下一个输出元素
   3. p = q
+<div align=center>![](/image/post/algorithm/2d_convex_hull/04.png)</div>
 
 ```cpp
 void ConvexHull()
@@ -98,7 +99,19 @@ void ConvexHull()
 
 ### Graham Scan
 
+&emsp;&emsp;算法可以分为两个主要部分：
+
+1. 预处理
+  1. 找到最下方的点（y 坐标最小的点），若有 y 坐标相同，则取 x 坐标较小的点。使该点 p0 作为输出凸包的第一个元素 points[0]。
+  2. 将剩下 n - 1 个点排序，以 p0 到该点与 x 轴的逆时针夹角从小到大的顺序排序，若有角度相同，则将距离 p0 较近的点放在前面。
+  3. 看是否有多个点有相同角度，移除它们，仅保留距离 p0 最远的那个点。此时得到的数组 points 是一条闭合路径。
 <div align=center>![](/image/post/algorithm/2d_convex_hull/05.png)</div>
+
+2. 接受或拒绝点
+  1. 创建空栈 S，将 points[0]、points[1]、points[2] 入栈。
+  2. 处理剩余的每个 points[i]：
+    1. 追踪当前的三个点 prev(p)：栈顶的下一个点，curr(c)：位于栈顶的点，next(n)：points[i]，如果它们的方向不是逆时针（向左转），则移除当前栈顶的点 c，否则保留。
+    2. 将 points[i] 入栈
 <div align=center>![](/image/post/algorithm/2d_convex_hull/06.png)</div>
 
 ```cpp
@@ -107,4 +120,5 @@ void ConvexHull()
 
 }
 ```
-&emsp;&emsp;算法的复杂度为 O(m * n)，其中 m 是输出凸包中点的数量，n 是输入点集中点的数量。最坏的情况下，点集中所有点都在输出的凸包上，时间复杂度为 O(n^2)。
+&emsp;&emsp;算法的第 1.1 步（找到最下方的点）花 O(n) 时间，第 1.2 步（点的排序）花 O(n * logn) 时间，第 1.3 步花 O(n) 时间。第 2 个步骤中，每个元素入栈和出栈最多一次，假设栈操作 O(1) 时间，则第 2 步总共花 O(n) 时间。因此总体的时间复杂度是 O(n * logn)。
+
