@@ -1,7 +1,7 @@
 ---
 author: "ysw1912"
-date: 2019-07-11T10:00:00+08:00
-lastmod: 2019-07-11T12:50:00+08:00
+date: 2019-07-11T09:00:00+08:00
+lastmod: 2019-07-11T09:30:00+08:00
 title: "GFlags使用"
 tags: [
     "C/C++"
@@ -19,6 +19,4 @@ GFlags 是 Google 开源的一个命令行 flag 库。与 getopt 之类不同，
 
 ### DEFINE: 在程序中定义 flag
 
-定义一个
-
-222
+定义一个gflags
