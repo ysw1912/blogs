@@ -1,7 +1,7 @@
 ---
 author: "ysw1912"
 date: 2019-07-11T09:00:00+08:00
-lastmod: 2019-07-13T17:30:00+08:00
+lastmod: 2019-07-13T18:00:00+08:00
 title: "GFlags使用"
 tags: [
     "C/C++"
@@ -20,6 +20,7 @@ categories: [
 #### 定义 Flag
 
 ​    使用 gflags 需要包含头文件`#include <gflags/gflags.h>`，支持的类型有：
+
 - `DEFINE_bool`: boolean
 - `DEFINE_int32`: 32-bit integer
 - `DEFINE_int64`: 64-bit integer
